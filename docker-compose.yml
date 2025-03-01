@@ -1,0 +1,31 @@
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: todo-db
+    restart: always
+    environment:
+      POSTGRES_USER: todo
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: todo
+    ports:
+      - "5432:5432"
+    volumes:
+      - todo-db-data:/var/lib/postgresql/data
+
+  nextjs-app:
+    build: .
+    container_name: todo-app
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "postgresql://todo:password@postgres:5432/todo"
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  todo-db-data:
